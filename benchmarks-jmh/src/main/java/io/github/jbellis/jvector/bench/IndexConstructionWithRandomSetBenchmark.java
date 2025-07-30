@@ -56,10 +56,10 @@ public class IndexConstructionWithRandomSetBenchmark {
     private int originalDimension;
     @Param({/*"10000",*/ "100000"/*, "1000000"*/})
     int numBaseVectors;
-    @Param({"16"})
+    @Param({"0", "16"})
     private int numberOfPQSubspaces;
 
-    @Setup(Level.Invocation)
+    @Setup(Level.Trial)
     public void setup() throws IOException {
 
         final var baseVectors = new ArrayList<VectorFloat<?>>(numBaseVectors);
