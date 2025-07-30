@@ -129,6 +129,11 @@ final class NativeVectorUtilSupport implements VectorUtilSupport
     }
 
     @Override
+    public float assembleAndSum2(VectorFloat<?> data, int subspaceCount, ByteSequence<?> baseOffsets1, int baseOffsetsOffset1, ByteSequence<?> baseOffsets2, int baseOffsetsOffset2, int clusterCount) {
+        throw new UnsupportedOperationException("assembleAndSum2 not supported for native vectorization");
+    }
+
+    @Override
     public int hammingDistance(long[] v1, long[] v2) {
         return VectorSimdOps.hammingDistance(v1, v2);
     }

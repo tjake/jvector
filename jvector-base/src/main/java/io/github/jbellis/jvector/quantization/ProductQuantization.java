@@ -584,6 +584,33 @@ public class ProductQuantization implements VectorCompressor<ByteSequence<?>>, A
             assert codebook.length() == clusterCount * subvectorSizesAndOffsets[i][0];
             vectorTypeSupport.writeFloatVector(out, codebook);
         }
+
+        // write the codebook partial sums at the end
+        vectorTypeSupport.writeFloatVector(out, createCodebookPartialSums());
+    }
+
+    /**
+     * Creates a vector to hold partial sums for a single codebook.
+     * The partial sums are the dot products of each subvector centroid in the codebook with the other subvector centroids.
+     * Since the dot product is commutative, we only need to store the upper triangle of the matrix.
+     * There are M codebooks, and each codebook has k centroids, so the total number of partial sums is M * k * (k+1) / 2.
+     *
+     * @return a vector to hold partial sums for a single codebook
+     */
+    public VectorFloat<?> createCodebookPartialSums() {
+        VectorFloat<?> partialSums = vectorTypeSupport.createFloatVector(getSubspaceCount() * getClusterCount() * (getClusterCount() + 1) / 2);
+        int index = 0;
+        for (int m = 0; m < M; m++) {
+            int size = subvectorSizesAndOffsets[m][0];
+            var codebook = codebooks[m];
+            for (int i = 0; i < clusterCount; i++) {
+                for (int j = i; j < clusterCount; j++) {
+                    partialSums.set(index++, VectorUtil.squareL2Distance(codebook, i * size, codebook, j * size, size));
+                }
+            }
+        }
+
+        return partialSums;
     }
 
     @Override
@@ -646,6 +673,12 @@ public class ProductQuantization implements VectorCompressor<ByteSequence<?>>, A
         for (int m = 0; m < M; m++) {
             VectorFloat<?> codebook = vectorTypeSupport.readFloatVector(in, clusters * subvectorSizes[m][0]);
             codebooks[m] = codebook;
+        }
+
+        if (in.getPosition() < in.length() - 1) {
+            // read the codebook partial sums
+            var partialSums = vectorTypeSupport.readFloatVector(in, M * clusters * (clusters + 1) / 2);
+            assert partialSums.length() == M * clusters * (clusters + 1) / 2;
         }
 
         return new ProductQuantization(codebooks, clusters, subvectorSizes, globalCentroid, anisotropicThreshold);
@@ -733,5 +766,9 @@ public class ProductQuantization implements VectorCompressor<ByteSequence<?>>, A
         if (clusterCount < 256) {
             LOG.warning("Using less than 256 PQ clusters will not reduce the memory footprint.");
         }
+    }
+
+    public int getOriginalDimension() {
+        return originalDimension;
     }
 }

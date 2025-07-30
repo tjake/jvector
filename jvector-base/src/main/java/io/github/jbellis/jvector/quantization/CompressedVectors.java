@@ -66,4 +66,6 @@ public interface CompressedVectors extends Accountable {
 
     /** the number of vectors */
     int count();
+
+
 }

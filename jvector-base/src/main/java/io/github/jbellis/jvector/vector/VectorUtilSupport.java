@@ -113,6 +113,19 @@ public interface VectorUtilSupport {
    */
   float assembleAndSum(VectorFloat<?> data, int baseIndex, ByteSequence<?> baseOffsets, int baseOffsetsOffset, int baseOffsetsLength);
 
+  /**
+   * Calculates the sum of sparse points in a vector.
+   *
+   * @param data the vector of all datapoints
+   * @param baseIndex the start of the data in the offset table
+   *                  (scaled by the index of the lookup table)
+   * @param baseOffsets bytes that represent offsets from the baseIndex
+   * @param baseOffsetsOffset the offset into the baseOffsets ByteSequence
+   * @param baseOffsetsLength the length of the baseOffsets ByteSequence to use
+   * @return the sum of the points
+   */
+  float assembleAndSum2(VectorFloat<?> data, int subspaceCount, ByteSequence<?> baseOffsets1, int baseOffsetsOffset1, ByteSequence<?> baseOffsets2, int baseOffsetsOffset2, int clusterCount);
+
   int hammingDistance(long[] v1, long[] v2);
 
 
