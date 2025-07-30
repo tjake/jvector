@@ -117,44 +117,6 @@ final class PanamaVectorUtilSupport implements VectorUtilSupport {
     }
 
     @Override
-    public float assembleAndSum2(
-            VectorFloat<?> data,
-            int subspaceCount,                  // = M
-            ByteSequence<?> baseOffsets1,
-            int baseOffsetsOffset1,
-            ByteSequence<?> baseOffsets2,
-            int baseOffsetsOffset2,
-            int clusterCount
-    ) {
-        float sum = 0f;
-        int blockSize = clusterCount * (clusterCount + 1) / 2;
-        int k = clusterCount;               // number of centroids per codebook
-
-        for (int i = 0; i < subspaceCount; i++) {
-            int c1 = Byte.toUnsignedInt(baseOffsets1.get(i + baseOffsetsOffset1));
-            int c2 = Byte.toUnsignedInt(baseOffsets2.get(i + baseOffsetsOffset2));
-            int r  = Math.min(c1, c2);
-            int c  = Math.max(c1, c2);
-
-            // compute row offset in the flattened upper triangle
-            int offsetRow = r * k - (r * (r - 1) / 2);
-            int idxInBlock = offsetRow + (c - r);
-
-            if (idxInBlock < 0 || idxInBlock >= blockSize) {
-                throw new IllegalStateException(
-                        "computed idxInBlock out of range: " + idxInBlock + " (blockSize=" + blockSize + ")");
-            }
-
-            // jump to the start of this subspace's block
-            int base = i * blockSize;
-            sum += data.get(base + idxInBlock);
-        }
-
-        return sum;
-    }
-
-
-    @Override
     public float assembleAndSum(VectorFloat<?> data, int dataBase, ByteSequence<?> baseOffsets, int baseOffsetsOffset, int baseOffsetsLength) {
         return SimdOps.assembleAndSum(((ArrayVectorFloat) data).get(), dataBase, ((ByteSequence<byte[]>) baseOffsets), baseOffsetsOffset, baseOffsetsLength);
     }

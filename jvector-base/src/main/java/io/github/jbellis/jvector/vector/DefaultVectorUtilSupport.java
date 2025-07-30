@@ -345,7 +345,6 @@ final class DefaultVectorUtilSupport implements VectorUtilSupport {
     return sum;
   }
 
-
   @Override
   public int hammingDistance(long[] v1, long[] v2) {
     int hd = 0;

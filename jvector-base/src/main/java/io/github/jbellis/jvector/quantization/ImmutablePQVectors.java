@@ -55,9 +55,6 @@ public class ImmutablePQVectors extends PQVectors {
     public ScoreFunction.ApproximateScoreFunction diversityFunctionFor(int node1, VectorSimilarityFunction similarityFunction) {
         final int subspaceCount = pq.getSubspaceCount();
 
-        if (true)
-            return super.diversityFunctionFor(node1, similarityFunction);
-
         var node1Chunk = getChunk(node1);
         var node1Offset = getOffsetInChunk(node1);
 

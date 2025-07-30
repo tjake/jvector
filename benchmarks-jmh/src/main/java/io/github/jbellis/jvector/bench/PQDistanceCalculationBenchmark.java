@@ -59,7 +59,7 @@ public class PQDistanceCalculationBenchmark {
     private ProductQuantization pq;
     private BuildScoreProvider buildScoreProvider;
     
-    @Param({"384"})
+    @Param({"1536"})
     private int dimension;
     
     @Param({"10000"})
@@ -68,7 +68,7 @@ public class PQDistanceCalculationBenchmark {
     @Param({"100"})
     private int queryCount;
     
-    @Param({ "48"})
+    @Param({ "0", "16", "64", "192"})
     private int M; // Number of subspaces for PQ
     
 
